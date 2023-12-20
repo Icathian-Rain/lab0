@@ -4,7 +4,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"os"
-
+	"strconv"
 )
 
 type CsvRidershipDB struct {
@@ -37,3 +37,30 @@ func (c *CsvRidershipDB) Open(filePath string) error {
 
 // TODO: some code goes here
 // Implement the remaining RidershipDB methods
+func (c *CsvRidershipDB) GetRidership(lineId string) ([]int64, error) {
+	// return res
+	var res = make([]int64, 9)
+	for {
+		record, err := c.csvReader.Read()
+		// if record == nil, there is no more record, break
+		if record == nil {
+			break
+		}
+		if err != nil {
+			panic(err.Error())
+		}
+		// sum the ons
+		if record[0] == lineId {
+			// time_period_0i -> idx = i-1
+			idx := c.idIdxMap[record[2]]
+			ons, _ := strconv.Atoi(record[4])
+			res[idx] += int64(ons)
+		}
+
+	}
+	return res, nil
+}
+
+func (c *CsvRidershipDB) Close() error {
+	return nil
+}
